@@ -2,13 +2,27 @@
 const express = require('express')
 const cors = require('cors')
 const uuid = require('uuid')
-const port = 3001
+const port = 3002
 
 // inicializamos o modulo do express
 const app = express()
 // quero usar o padrão json
 app.use(express.json())
-app.use(cors())
+
+app.use((req, res, next) => {
+
+    res.header("Access-Control-Allow-Origin", "https://example.com")
+    res.header("Access-Control-Max-Age: 1800")
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,POST,DELETE,PATCH")
+    res.header("Access-Control-Allow-Headers", "Content-Type")
+    res.header("'Access-Control-Allow-Credentials': true")
+    // "preflightContinue", false
+    // "optionsSuccessStatus", 204
+
+    app.use(cors())
+    next()
+})
+
 
 
 // criamos o servidor do express para escutar na porta 3001
@@ -40,13 +54,13 @@ const showRequest = (req, res, next) => {
  
  }
 
-app.get('/orders', showRequest, (req, res) => {
+app.get('/orders', cors(), showRequest, (req, res) => {
      return res.json(orders)
      console.log(orders)
 })
 
 
-app.post('/orders', showRequest, (req, res) => {
+app.post('/orders', cors(), showRequest, (req, res) => {
     const { order, clientName, price, status } = req.body
 
     const newOrder = { id: uuid.v4(), order, clientName, price, status }
@@ -58,7 +72,7 @@ app.post('/orders', showRequest, (req, res) => {
     return res.status(201).json(newOrder)
 })
 
-app.put('/orders/:id', showRequest, checkIfExistId, (req, res) => {
+app.put('/orders/:id', cors(), showRequest, checkIfExistId, (req, res) => {
     
     const { order, clientName, price, status } = req.body
     const index = req.newOrderIndex
@@ -74,7 +88,7 @@ app.put('/orders/:id', showRequest, checkIfExistId, (req, res) => {
     return res.json(updateNewOrder)
 })
 
-app.delete('/orders/:id', checkIfExistId, (req, res) => {
+app.delete('/orders/:id', cors(), checkIfExistId, (req, res) => {
     const index = req.newOrderIndex
     
     orders.splice(index,1)
@@ -83,7 +97,7 @@ app.delete('/orders/:id', checkIfExistId, (req, res) => {
 })
 
 /* Pedido específico  */
-app.get('/orders/:id', checkIfExistId, (req, res) => {
+app.get('/orders/:id', cors(),  checkIfExistId, (req, res) => {
     const index = req.newOrderIndex
     const id = req.newOrderId
     
@@ -99,7 +113,7 @@ app.get('/orders/:id', checkIfExistId, (req, res) => {
     
 })
 
-app.patch('/orders/:id', showRequest, checkIfExistId , (req, res) => {
+app.patch('/orders/:id', cors(), showRequest, checkIfExistId , (req, res) => {
     const index = req.newOrderIndex
     const id = req.newOrderId 
 
