@@ -3,11 +3,13 @@ const express = require('express')
 const cors = require('cors')
 const uuid = require('uuid')
 const port = 3001
+
 // inicializamos o modulo do express
 const app = express()
 // quero usar o padrão json
 app.use(express.json())
 app.use(cors())
+
 
 // criamos o servidor do express para escutar na porta 3001
 // deixar uma mensagem no terminal
